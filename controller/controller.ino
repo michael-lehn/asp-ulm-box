@@ -31,7 +31,7 @@ void loop() {
         pitch = 40;
     }
 
-    int newValue = (pitch + 40) * 10;
+    int newValue = (pitch + 40) * 20;
     if (newValue != value) {
         value = newValue;
         Serial.print("X ");
