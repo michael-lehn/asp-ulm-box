@@ -1,28 +1,52 @@
-void setup()
-{
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+
+// BNO055-Objekt anlegen
+Adafruit_BNO055 bno = Adafruit_BNO055(55);
+
+void setup() {
     Serial.begin(9600);
-     pinMode(2, INPUT);
+    pinMode(2, INPUT);
+
+    if (!bno.begin()) {
+        Serial.println("BNO055 nicht gefunden! Bitte Verkabelung prüfen.");
+        while (1);
+    }
+
+    delay(1000);  // Sensor initialisieren lassen
+    bno.setExtCrystalUse(true);
 }
 
-int valueA0;
+int value;
 bool pressedA;
 
-void loop()
-{
+void loop() {
+    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+
+    double pitch = -euler.z();
+    if (pitch < -40) {
+        pitch = -40;
+    } else if (pitch > 40) {
+        pitch = 40;
+    }
+
+    int newValue = (pitch + 40) * 10;
+    if (newValue != value) {
+        value = newValue;
+        Serial.print("X ");
+        Serial.println(value);
+    }
+
     if (!pressedA && digitalRead(2)) {
-        Serial.println("A");
         pressedA = true;
+        Serial.println("A");
     }
     if (pressedA && !digitalRead(2)) {
-        Serial.println("a");
         pressedA = false;
+        Serial.println("a");
     }
-    int analogValue = analogRead(A0);
-    if (valueA0 != analogValue) {
-        valueA0 = analogValue;
-        Serial.print("X ");
-        Serial.println(valueA0);
-    }
-    delay(0.01);
+
+    delay(100);
 }
 
