@@ -14,6 +14,7 @@ all: $(HEX)
 
 .PHONY: install-core
 install-core:
+	arduino-cli lib install "Adafruit BNO055"
 	@if ! arduino-cli core list | grep -q '^arduino:avr'; then\
 		echo "Installing arduino:avr ..."; \
 		arduino-cli core update-index; \
